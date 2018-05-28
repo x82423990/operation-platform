@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ing management</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../static/css/font.css">
+    <link rel="stylesheet" href="../../static/css/weadmin.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        /* 新增删除图标的样式 */
+
+        .layui-form-label {
+            width: 100%;
+            text-align: left;
+        }
+
+        .layui-form-label,
+        .layui-form-item .layui-input-inline {
+            margin-top: 10px;
+        }
+
+        .yf-input-del .layui-input-inline .layui-input {
+            padding-right: 20px;
+        }
+
+        .yf-input-del .layui-input-inline i.layui-icon {
+            position: absolute;
+            right: 2px;
+            top: 10px;
+            color: #999999;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+		        <a href="">首页</a>
+		        <a href="">kubernetes管理</a>
+		        <a><cite>域名管理</cite></a>
+		    </span>
+    <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#x1002;</i></a>
+</div>
+<div class="weadmin-body">
+    <div class="weadmin-block">
+        <button class="layui-btn" onclick="WeAdminShow('添加域名','./adding.html',w=600,h=350)"><i class="layui-icon"></i>新增一个域名
+        </button>
+    </div>
+    <table class="layui-hide" id="svclist" lay-filter="svclist"></table>
+</div>
+
+<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+<script src="../../static/js/admin.js" type="text/javascript" charset="utf-8"></script>
+
+
+<!--工具条调-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" id="dpupdate" lay-event="update">更新</a>
+    <!--<a class="layui-btn layui-btn-xs" onclick="WeAdminShow('添加','./updp.html',w=600,h=550)"><i class="layui-icon">更新</a>-->
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['element', 'jquery', "table"], function () {
+        var element = layui.element,
+            $ = layui.jquery,
+            table = layui.table
+        table.render({
+            elem: '#svclist'
+            , limit: '10'
+            , url: '/k8s/ing/getall'
+            , cols: [[
+                {type: 'checkbox'}
+                , {field: 'name', title: '名称', sort: true}
+                , {field: 'namespaces', title: '分组', sort: true}
+                , {field: 'svc_name', title: '关联服务 '}
+                , {field: 'svc_port', title: '对外端口 '}
+                , {field: 'host', title: '域名 '}
+                , {field: 'right', title: '操作', width: 177, toolbar: "#barDemo"}
+            ]]
+            , page: true
+        });
+        console.log("go")
+
+        // 监听工具条
+        table.on('tool(svclist)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'detail') {
+                layer.msg("Yml文件正在完善, 暂不开放");
+            }else if(obj.event === 'update'){
+                 let f = obj.data
+                console.log(f)
+                layer.msg("暂不支持修改域名！");
+                // let agument = '?' + "name=" + f.name + "&env=" + f.env + "&image=" + f.image + "&ns=" + f.ns + "&project=" + f.project + "&rc=" + f.replicas + "&tag=" + f.tag
+                // let url = "./updp.html"
+                // WeAdminShow('更新deployment', url + agument, w = 600, h = 550)
+            }else if (obj.event === 'del') {
+                layer.confirm('确认要删除服务: ' + obj.data.name + "么?", function (index) {
+                    DelIng(obj)
+                    layer.close(index);
+                });
+            }
+        });
+
+        function DelIng(obj) {
+            $.ajax({
+                type: "POST",
+                url: "/k8s/ing/del",
+                data: obj.data,
+                success(data) {
+                    if (data.status == 0) {
+                        layer.alert("删除成功", {
+                            icon: 1
+                        })
+                        obj.del()
+                    } else {
+                        layer.alert("err" + data.status + ":" + data.msg, {
+                            icon: 5
+                        })
+                    }
+                }
+            })
+            console.log(obj.data)
+            // obj.del()
+        }
+
+    })
+</script>
+
+</body>
+
+</html>
