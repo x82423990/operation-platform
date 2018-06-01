@@ -8,14 +8,16 @@ from k8s import hub as repitl
 from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.decorators import method_decorator
 from datetime import timedelta, timezone
+import json
 
 
 class DpList(View):
-    @method_decorator(login_required)
+    # @method_decorator(login_required)
     def get(self, request):
+        # a = json.loads(request.body)
         page = int(request.GET.get('page'))
-        limit = int(request.GET.get('limit'))
-        namespace = request.GET.get('namespace')
+        print(page)
+        namespace = request.POST.get('namespace')
         config.load_kube_config()
         v1 = client.AppsV1Api()
         res = dict()
@@ -64,13 +66,19 @@ class DpList(View):
             res['code'] = 6
             res['count'] = 0
             res['data'] = e
-        startPage = page * limit - limit
-        endPage = startPage + limit
-        res['data'] = dp_list[startPage:endPage]
+        if tmp is None or tmp == 0:
+            res['data'] = dp_list
+        else:
+
+            limit = 10
+            startPage = page * limit - limit
+            endPage = startPage + limit
+            res['data'] = dp_list[startPage:endPage]
         return JsonResponse(res, safe=True)
 
+
 class SelectType(View):
-    @method_decorator(login_required)
+    # @method_decorator(login_required)
     def get(self, request, types):
         # if types == 'add':
         #     return render(request, 'seconds/add.html', {'title': 'add dep'})
@@ -94,7 +102,7 @@ class SelectType(View):
 
             return JsonResponse(ret, safe=True)
 
-    @method_decorator(login_required)
+    # @method_decorator(login_required)
     def post(self, request, types):
         if types == 'img':
             ret = dict()
@@ -135,7 +143,7 @@ class SelectType(View):
 
 
 class DpManagement(View):
-    @method_decorator(login_required)
+    # @method_decorator(login_required)
     def post(self, request, types):
         ret = dict()
         ret['status'] = 0

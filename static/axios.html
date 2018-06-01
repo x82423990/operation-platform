@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <script src="../node_modules/vue-resource/dist/vue-resource.js"></script>
+    <script src="../node_modules/axios/dist/axios.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <div id="app" class="container">
+        <h1>vue-axiose插件讲解</h1>
+        <a href="javascript:;" class="btn btn-primary" v-on:click="get">Get Queset</a>
+        <a href="javascript:;" class="btn btn-primary" v-on:click="post">Post Queset</a>
+        <a href="javascript:;" class="btn btn-primary" v-on:click="http">Http Queset</a>
+
+
+        <div>
+            <span>{{msg}}</span>
+        </div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            msg: ""
+
+        },
+        mounted: function(){
+            // 拦截器
+            axios.interceptors.request.use(function(config){
+                console.log('init request')
+                return config
+            })
+            axios.interceptors.response.use(function(res){
+                console.log("init respones");
+                return res
+            })
+        },
+        methods: {
+            get: function () {
+                axios.post("http://127.0.0.1:8000/login",{
+                    params:{
+                        username:"xieyifan",
+                        password:"Fs90069006"
+                    },
+                    headers:{
+                        "Access-Control-Allow-Origin": "*"
+                    }
+                })
+                    .then(function (response) {
+                        this.msg = response.msg
+                        console.log(response);
+                    })
+                    .catch(function (response) {
+                        this.msg = response
+                        console.log(response);
+                    });
+            },
+            post: function () {
+                axios.post('../package.json',{
+                    username:'admin',
+                    password:"Fs90069006",
+                    headers:{
+                        token:"awejfq0ufjroewq"
+                    }
+                }).then(function(res){
+                    this.msg=res.data
+                }).catch(function (res){
+                    this.msg=res
+                })
+            },
+            http:function(){
+                axios({
+                    url:'../package.json',
+                    method: "get",
+                    data:{
+                        userId:101
+                    },
+                    params:{
+                        username:"xieyifan"
+                    },
+                    headers:{
+                        token:"sdfsdfsd"
+                    }
+                }).then(res=>{
+                    this.msg = res.data
+                })
+            }
+        }
+    })
+</script>
+
+</html>

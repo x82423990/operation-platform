@@ -22,6 +22,8 @@ import hxbd
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', hxbd.user_login),
+    # path('test/', hxbd.testApi),
+
     # path('islogin'), hxbd.is_login,
     url(r'^', include("k8s.urls")),
 ]

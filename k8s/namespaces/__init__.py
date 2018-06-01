@@ -73,7 +73,7 @@ class Nm_list(View):
 
         if types == "del":
             ret = {'code': 0}
-            name = request.POST.get('namespace', None)
+            name = request.POST.get('ns', None)
             print(name)
             try:
                 config.load_kube_config()
