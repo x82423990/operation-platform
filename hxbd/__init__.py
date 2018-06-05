@@ -13,6 +13,7 @@ def user_login(request):
     if user is not None:
         login(request, user)
         session_key = request.session.session_key
+        print("sessionid 是:", session_key)
         ret["code"] = 0
         ret["msg"] = "success"
         ret['data'] = {"sessionid": session_key}
