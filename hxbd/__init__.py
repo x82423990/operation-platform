@@ -1,18 +1,18 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import permission_required, login_required
-from django.utils.decorators import method_decorator
 
 
 def user_login(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     user = authenticate(request, username=username, password=password)
-    session_key = request.session.session_key
+
     print(username, password)
     ret = dict()
     if user is not None:
         login(request, user)
+        session_key = request.session.session_key
         ret["code"] = 0
         ret["msg"] = "success"
         ret['data'] = {"sessionid": session_key}
