@@ -80,8 +80,7 @@ class DpList(View):
 class SelectType(View):
     # @method_decorator(login_required)
     def get(self, request, types):
-        # if types == 'add':
-        #     return render(request, 'seconds/add.html', {'title': 'add dep'})
+
         if types == 'img':
             a = repitl.get_image_name()
             return JsonResponse(a, safe=False)

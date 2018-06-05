@@ -83,11 +83,9 @@ def get_image_name(url='http://hub.cbble.com/api/repositories?project_id=', proj
     s = login()
     urls = url + str(project_id)
     ret = s.get(urls)
-    print(type(ret))
     tmp = []
     for i in ret.json():
         tmp.append(i.get('name'))
-
 
     return tmp
 
@@ -105,8 +103,8 @@ def get_all():
 
 
 if __name__ == '__main__':
-    a = get_tags('test/pro-hsd-approve-web')
-    print(a)
+    # a = get_tags('test/pro-hsd-approve-web')
+    # print(a)
     # print(get_project())
     # print(get_project())
-    # print(get_image_name(project_id=6))
+    print(get_image_name(project_id=6))

@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from . import views
-from . import pod, deployment, service, ingress, namespaces
+from . import pod, deployment, service, ingress, namespaces, image
 urlpatterns = [
     # url('^$', views.IndexView.as_view()),
     url('^k8s/', include([
@@ -12,6 +12,8 @@ urlpatterns = [
         url(r'^select/(?P<types>.*)', deployment.SelectType.as_view()),
         url(r'^nmlist/$', namespaces.Nm_list.as_view()),
         url(r'^nmlist/(?P<types>.*)', namespaces.Nm_list.as_view()),
+        url(r'^image/(?P<types>.*)', image.Image.as_view(), name='images'),
+
         # url(r'^delete/ns/(?P<ns>.*)/$', deletes.delete_ns, name='delete'),
         # url(r'^dp/$', k8s.Dp_list.as_view(), name='test'),
         # url(r'^select/(?P<types>.*)', k8s.SelectType.as_view(), name='ls_ns'),
