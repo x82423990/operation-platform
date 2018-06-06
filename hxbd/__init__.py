@@ -13,13 +13,13 @@ def user_login(request):
     if user is not None:
         login(request, user)
         session_key = request.session.session_key
-        print("sessionid...是:", session_key)
+        print("sessionid.是:", session_key)
         ret["code"] = 0
         ret["msg"] = "success"
         ret['data'] = {"sessionid": session_key}
     else:
         ret["code"] = 1
-        ret["msg"] = "用户名或者密码错误！"
+        ret["msg"] = "用户名或者密码错误!！"
         ret['data'] = "None"
     return JsonResponse(ret)
 
