@@ -24,5 +24,7 @@ urlpatterns = [
     path('user/login/', hxbd.user_login),
     path('user/logout/', hxbd.user_logout),
     path('user/test/', hxbd.test),
+    path('user/deny/', hxbd.denys),
+
     url(r'^', include("k8s.urls")),
 ]

@@ -39,3 +39,7 @@ def test(request):
 def user_logout(request):
     logout(request)
     return JsonResponse({"code": 0, "msg": "success"})
+
+
+def denys(request):
+    return JsonResponse({"code": "403", "msg": "你并没有登陆"})
