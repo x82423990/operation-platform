@@ -19,7 +19,7 @@ def user_login(request):
         ret['data'] = {"sessionid": session_key}
     else:
         ret["code"] = 1
-        ret["msg"] = "用户名或者密码错误!！"
+        ret["msg"] = "用户名或者密码错误！"
         ret['data'] = "None"
     return JsonResponse(ret)
 
