@@ -15,6 +15,7 @@ class Nm_list(View):
         limit = request.GET.get('limit')
         ret = dict()
         res = dict()
+        tmp = dict()
         nm_list = []
         counter = 0
         try:
@@ -31,20 +32,21 @@ class Nm_list(View):
                 nm_list.append(res)
                 counter += 1
             ret['code'] = 0
-            ret['count'] = counter
+            tmp['count'] = counter
 
         except ApiException as e:
             print(e)
             ret['code'] = 403
-            ret['count'] = 0
-            ret['data'] = e
+            tmp['count'] = 0
+            tmp['data'] = e
         if limit is None:
             limit = 10
         else:
             limit = int(limit)
         startPage = int(page) * limit - limit
         endPage = startPage + limit
-        ret['data'] = nm_list[startPage:endPage]
+        tmp['data'] = nm_list[startPage:endPage]
+        ret['data'] = tmp
         return JsonResponse(ret, safe=True)
 
     def post(self, request, types):
