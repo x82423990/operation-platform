@@ -89,6 +89,6 @@ class Nm_list(View):
                 ret['msg'] = 'success'
             except ApiException as e:
                 print(e)
-                ret['code'] = 0
+                ret['code'] = 2
                 ret['msg'] = 'error'
             return JsonResponse(ret, safe=True)
