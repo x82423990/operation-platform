@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 
 
 class Nm_list(View):
-    # @login_required()
+    @login_required()
     def get(self, request):
         page = request.GET.get('page')
         limit = request.GET.get('limit')
@@ -51,7 +51,7 @@ class Nm_list(View):
 
     def post(self, request, types):
         if types == "add":
-            ret = {'status': 0}
+            ret = {'code': 0}
             name = request.POST.get('ns', None)
             if name.isalpha():
                 try:
@@ -69,11 +69,11 @@ class Nm_list(View):
 
                     tmp = eval(str(e.body))
 
-                    ret['status'] = tmp.get('code')
+                    ret['code'] = tmp.get('code')
 
                     ret['msg'] = tmp.get('message')
             else:
-                ret['status'] = '8'
+                ret['code'] = '8'
                 ret['msg'] = "名称必须为纯字母"
             return JsonResponse(ret, safe=True)
 
