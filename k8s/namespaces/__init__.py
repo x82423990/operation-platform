@@ -11,8 +11,8 @@ from django.utils.decorators import method_decorator
 class Nm_list(View):
     # @login_required()
     def get(self, request):
-        page = int(request.GET.get('page'))
-        limit = int(request.GET.get('limit'))
+        page = request.GET.get('page')
+        limit = request.GET.get('limit')
         ret = dict()
         res = dict()
         nm_list = []
@@ -38,7 +38,11 @@ class Nm_list(View):
             ret['code'] = 403
             ret['count'] = 0
             ret['data'] = e
-        startPage = page * limit - limit
+        if limit is None:
+            limit = 10
+        else:
+            limit = int(limit)
+        startPage = int(page) * limit - limit
         endPage = startPage + limit
         ret['data'] = nm_list[startPage:endPage]
         return JsonResponse(ret, safe=True)
