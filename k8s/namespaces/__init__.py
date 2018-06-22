@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 
 
 class Nm_list(View):
-    @login_required()
+    # @login_required()
     def get(self, request):
         page = request.GET.get('page')
         limit = request.GET.get('limit')
