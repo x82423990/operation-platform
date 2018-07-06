@@ -16,11 +16,14 @@ class DpList(View):
     def get(self, request):
         # a = json.loads(request.body)
         page = int(request.GET.get('page'))
+        limit = int(request.GET.get('limit'))
         print(page)
         namespace = request.POST.get('namespace')
+        keyword = request.GET.get('keyword')
         config.load_kube_config()
         v1 = client.AppsV1Api()
         res = dict()
+        suc = dict()
         count = 0
         dp_list = []
         if namespace:
@@ -29,7 +32,7 @@ class DpList(View):
             tmp = v1.list_deployment_for_all_namespaces().items
         try:
             for i in tmp:
-                ret = {}
+                ret = dict()
                 timeP = i.metadata.creation_timestamp.replace(tzinfo=timezone.utc).astimezone(
                     timezone(timedelta(hours=8)))
                 times = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.mktime(
@@ -57,24 +60,30 @@ class DpList(View):
                         ret['env'] = 'no config'
                     else:
                         ret['env'] = j.env[0].value
-                dp_list.append(ret)
+                if keyword:
+                    if keyword in ret.get("name"):
+                        dp_list.append(ret)
+                else:
+                    dp_list.append(ret)
+
                 count += 1
-            res['code'] = 0
+            suc['code'] = 0
             res['count'] = count
         except Exception as e:
             print(e)
-            res['code'] = 6
+            suc['code'] = 6
             res['count'] = 0
             res['data'] = e
         if tmp is None or tmp == 0:
             res['data'] = dp_list
         else:
-
-            limit = 10
+            if limit is None:
+                limit = 10
             startPage = page * limit - limit
             endPage = startPage + limit
             res['data'] = dp_list[startPage:endPage]
-        return JsonResponse(res, safe=True)
+            suc['data'] = res
+        return JsonResponse(suc, safe=True)
 
 
 class SelectType(View):
