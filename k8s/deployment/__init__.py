@@ -15,10 +15,10 @@ class DpList(View):
     # @method_decorator(login_required)
     def get(self, request):
         # a = json.loads(request.body)
-        page = int(request.GET.get('page'))
-        limit = int(request.GET.get('limit'))
+        page = request.GET.get('page')
+        limit = request.GET.get('limit')
         print(page)
-        namespace = request.POST.get('namespace')
+        namespace = request.GET.get('namespace')
         keyword = request.GET.get('keyword')
         config.load_kube_config()
         v1 = client.AppsV1Api()
@@ -78,7 +78,9 @@ class DpList(View):
             res['data'] = dp_list
         else:
             if limit is None:
-                limit = 10
+                limit = 10000
+            page = int(page)
+            limit = int(limit)
             startPage = page * limit - limit
             endPage = startPage + limit
             res['data'] = dp_list[startPage:endPage]
