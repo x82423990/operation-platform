@@ -17,32 +17,38 @@ class Image(View):
     def get(self, request, types):
         if types == 'img':
             ret = dict()
-            ret["code"] = 0
+            res = dict()
+            res["code"] = 0
             try:
                 pj_id = request.GET.get('pid', None)
                 a = repitl.get_image_name(project_id=pj_id)
-                print(a)
                 ret['data'] = a
+                res['data'] = ret
             except Exception as e:
-                ret["code"] = 2
-                ret["msg"] = "error"
-            return JsonResponse(ret)
+                res["code"] = 2
+                res["msg"] = "error"
+
+            return JsonResponse(res)
 
         if types == 'tags':
             ret = dict()
+            res = dict()
             try:
                 repo_name = request.GET.get('image')
                 tags = repitl.get_tags(repo_name)
-                ret["code"] = 0
+                res["code"] = 0
                 ret["data"] = tags
+                res['data'] = ret
             except Exception as e:
-                ret["code"] = 2
-                ret["msg"] = "error"
-            print(ret)
-            return JsonResponse(ret)
+                res["code"] = 2
+                res["msg"] = "error"
+            return JsonResponse(res)
 
         if types == 'project':
-            return JsonResponse(repitl.get_project())
+            res =dict()
+            res['code'] = 0
+            res['data'] = repitl.get_project()
+            return JsonResponse(res)
 
         else:
             return JsonResponse({"code": 404, "msg": "你访问的页面的不存在!"})
