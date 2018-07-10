@@ -203,7 +203,7 @@ class DpManagement(View):
             env = request.POST.get('env')
             img = request.POST.get('image')
             ns = request.POST.get('ns')
-            pj = request.POST.get('repo')
+            # pj = request.POST.get('project')
             tags = request.POST.get('tag')
             rc = request.POST.get('rc')
             config.load_kube_config()
@@ -220,11 +220,11 @@ class DpManagement(View):
                 # get env
                 tmp = eval(str(deployment.spec.template.spec.containers[0].env[0]))
                 tmp['value'] = env
-                images = 'hub.cbble.com/' + pj + '/' + img + ':' + tags
+                images = 'hub.cbble.com/' + img + ':' + tags
+                print(images)
                 deployment.spec.template.spec.containers[0].image = images
                 deployment.spec.replicas = int(rc)
                 deployment.spec.template.spec.containers[0].env[0] = tmp
-                print("objname_______", dp_obj.metadata.name)
                 api.patch_namespaced_deployment(
                     name=dp_obj.metadata.name,
                     namespace=ns,
