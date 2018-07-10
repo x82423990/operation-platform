@@ -1,6 +1,6 @@
 from django.views.generic import View
 from kubernetes import client, config
-import time
+import time, json
 from django.http import JsonResponse
 from kubernetes.client.rest import ApiException
 from .DpApi import create_deployment, create_deployment_object, delete_deployment, update_deployment
@@ -8,6 +8,7 @@ from k8s import hub as repitl
 from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.decorators import method_decorator
 from datetime import timedelta, timezone
+
 
 
 class DpList(View):
@@ -153,6 +154,8 @@ class SelectType(View):
 
 class DpManagement(View):
     # @method_decorator(login_required)
+
+
     def post(self, request, types):
         ret = dict()
         ret['code'] = 0
@@ -177,26 +180,26 @@ class DpManagement(View):
                 ret['code'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
+
         if types == 'delete':
-            ns = request.POST.get('ns')
-            dp_name = request.POST.get('name')
-            ret = {'code': 0}
-            if dp_name is None:
-                ret['code'] = 100
-                ret['msg'] = 'ns_name or dp_name is None'
-                return JsonResponse(ret)
-            else:
+            # ns = request.POST.get('ns')
+            # dp_name = request.POST.get('name')
+            # data = request.POST.get('date')
+            data = json.loads(request.body)
+            print(data.get('data'))
+            for i in data.get('data'):
                 try:
                     config.load_kube_config()
                     extensions_v1beta1 = client.ExtensionsV1beta1Api()
-                    delete_deployment(extensions_v1beta1, ns=ns, images=dp_name)
+                    delete_deployment(extensions_v1beta1, ns=i.get('ns'), images=i.get('name'))
                     ret['code'] = 0
                     ret['msg'] = '删除成功'
                 except ApiException as e:
                     tmp = eval(str(e.body))
                     ret['code'] = tmp.get('code')
                     ret['msg'] = tmp.get('message')
-            return JsonResponse(ret)
+            return JsonResponse({"code": 0})
+
         if types == "verify":
             img = request.POST.get('image')
             tags = request.POST.get('tag')

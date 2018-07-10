@@ -35,8 +35,8 @@ class SvcManagement(View):
                     else:
                         svc_list.append(ret)
                         count += 1
-                if count ==0:
-                    return  JsonResponse({"code": 404, "msg": " not found svc!" })
+                if count == 0:
+                    return JsonResponse({"code": 404, "msg": " not found svc!"})
                 res['count'] = count
                 sus["code"] = 0
                 page = int(page)
@@ -56,8 +56,8 @@ class SvcManagement(View):
     @method_decorator(login_required)
     def post(self, request, types):
         if types == 'del':
-            ret = {'status': 0}
-            ns = request.POST.get('group')
+            ret = {'code': 0}
+            ns = request.POST.get('ns')
             svc_name = request.POST.get('name')
             print(svc_name, ns)
             try:
@@ -67,20 +67,20 @@ class SvcManagement(View):
                 api_instance.delete_namespaced_service(name=svc_name, namespace=ns, body=body)
             except ApiException as e:
                 tmp = eval(str(e.body))
-                ret['status'] = tmp.get('code')
+                ret['code'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
         if types == 'add':
             ret = dict()
-            ret["status"] = 0
+            ret["code"] = 0
             ns = request.POST.get('ns')
             labels = request.POST.get('selector')
             if request.POST.get('name'):
                 name = request.POST.get('name')
             else:
                 name = labels
-            ports = int(request.POST.get('port'))
-            target = int(request.POST.get('target'))
+            ports = int(request.POST.get('source_port'))
+            target = int(request.POST.get('target_port'))
             try:
                 config.load_kube_config()
                 api_instance = client.CoreV1Api()
@@ -97,6 +97,6 @@ class SvcManagement(View):
 
             except ApiException as e:
                 tmp = eval(str(e.body))
-                ret['status'] = tmp.get('code')
+                ret['code'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
