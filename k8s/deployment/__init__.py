@@ -73,17 +73,16 @@ class DpList(View):
             suc['code'] = 6
             res['count'] = 0
             res['data'] = e
-        if tmp is None or tmp == 0:
-            res['data'] = dp_list
-        else:
-            if limit is None:
-                limit = 10000
-            page = int(page)
-            limit = int(limit)
-            startPage = page * limit - limit
-            endPage = startPage + limit
-            res['data'] = dp_list[startPage:endPage]
-            suc['data'] = res
+        if limit is None:
+            limit = 10000
+        page = int(page)
+        limit = int(limit)
+        startPage = page * limit - limit
+        endPage = startPage + limit
+        data = dp_list[startPage:endPage]
+        data.sort(key=lambda x: x["update_time"], reverse=True)
+        res['data'] = data
+        suc['data'] = res
         return JsonResponse(suc, safe=True)
 
 
