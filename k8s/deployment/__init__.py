@@ -8,7 +8,6 @@ from k8s import hub as repitl
 from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.decorators import method_decorator
 from datetime import timedelta, timezone
-import json
 
 
 class DpList(View):
@@ -37,14 +36,14 @@ class DpList(View):
                     timezone(timedelta(hours=8)))
                 times = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.mktime(
                     timeP.timetuple())))
-                uptimeP = i.status.conditions[1].last_update_time.replace(tzinfo=timezone.utc).astimezone(
+                uptimeP = i.code.conditions[1].last_update_time.replace(tzinfo=timezone.utc).astimezone(
                     timezone(timedelta(hours=8)))
                 uptimes = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.mktime(
                     uptimeP.timetuple())))
                 ret['name'] = i.metadata.name
                 ret['ns'] = i.metadata.namespace
-                ret['replicas'] = i.status.replicas
-                ret['available_replicas'] = i.status.available_replicas
+                ret['replicas'] = i.code.replicas
+                ret['available_replicas'] = i.code.available_replicas
                 ret['create_time'] = times
                 ret['update_time'] = uptimes
                 for j in i.spec.template.spec.containers:
@@ -156,7 +155,7 @@ class DpManagement(View):
     # @method_decorator(login_required)
     def post(self, request, types):
         ret = dict()
-        ret['status'] = 0
+        ret['code'] = 0
         ret["msg"] = "sucess"
         if types == 'add':
             # salt = '-' + ''.join(random.sample(string.ascii_lowercase, 4))
@@ -175,15 +174,15 @@ class DpManagement(View):
                 create_deployment(extensions_v1beta1, deploy, ns=ns)
             except ApiException as e:
                 tmp = eval(str(e.body))
-                ret['status'] = tmp.get('code')
+                ret['code'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
         if types == 'delete':
             ns = request.POST.get('ns')
             dp_name = request.POST.get('name')
-            ret = {'status': 0}
+            ret = {'code': 0}
             if dp_name is None:
-                ret['status'] = 100
+                ret['code'] = 100
                 ret['msg'] = 'ns_name or dp_name is None'
                 return JsonResponse(ret)
             else:
@@ -191,15 +190,15 @@ class DpManagement(View):
                     config.load_kube_config()
                     extensions_v1beta1 = client.ExtensionsV1beta1Api()
                     delete_deployment(extensions_v1beta1, ns=ns, images=dp_name)
-                    ret['status'] = 0
+                    ret['code'] = 0
                     ret['msg'] = '删除成功'
                 except ApiException as e:
                     tmp = eval(str(e.body))
-                    ret['status'] = tmp.get('code')
+                    ret['code'] = tmp.get('code')
                     ret['msg'] = tmp.get('message')
             return JsonResponse(ret)
         if types == 'update':
-            ret = {'status': 0}
+            ret = {'code': 0}
             dp_name = request.POST.get('name')
             env = request.POST.get('env')
             img = request.POST.get('image')
@@ -235,7 +234,7 @@ class DpManagement(View):
 
                 tmp = eval(str(e.body))
 
-                ret['status'] = tmp.get('code')
+                ret['code'] = tmp.get('code')
 
                 ret['msg'] = tmp.get('message')
 
