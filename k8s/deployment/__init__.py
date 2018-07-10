@@ -197,6 +197,18 @@ class DpManagement(View):
                     ret['code'] = tmp.get('code')
                     ret['msg'] = tmp.get('message')
             return JsonResponse(ret)
+        if types == "verify":
+            img = request.POST.get('image')
+            tags = request.POST.get('tag')
+            if img and tags:
+                tag_list = repitl.get_tags(img)
+                if tags in tag_list:
+                    return JsonResponse({"code": 0, "msg":"success"})
+                else:
+                    return JsonResponse({"code": 404, "msg": "請輸入正確的鏡像tag"})
+            else:
+                return JsonResponse({"code": 403,"msg": "鏡像或者tag為空"})
+
         if types == 'update':
             ret = {'code': 0}
             dp_name = request.POST.get('name')
