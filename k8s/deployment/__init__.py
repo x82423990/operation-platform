@@ -48,6 +48,7 @@ class DpList(View):
                 ret['update_time'] = uptimes
                 for j in i.spec.template.spec.containers:
                     ret['project'] = j.image.split('/')[1]
+                    ret['pid'] = repitl.get_project_id(ret['project'])
                     tmp_image = j.image.split('/')[-1]
                     ret['image'] = tmp_image.split(":")[0]
                     tag_list = tmp_image.split(":")
