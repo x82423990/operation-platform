@@ -36,14 +36,14 @@ class DpList(View):
                     timezone(timedelta(hours=8)))
                 times = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.mktime(
                     timeP.timetuple())))
-                uptimeP = i.code.conditions[1].last_update_time.replace(tzinfo=timezone.utc).astimezone(
+                uptimeP = i.status.conditions[1].last_update_time.replace(tzinfo=timezone.utc).astimezone(
                     timezone(timedelta(hours=8)))
                 uptimes = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.mktime(
                     uptimeP.timetuple())))
                 ret['name'] = i.metadata.name
                 ret['ns'] = i.metadata.namespace
-                ret['replicas'] = i.code.replicas
-                ret['available_replicas'] = i.code.available_replicas
+                ret['replicas'] = i.status.replicas
+                ret['available_replicas'] = i.status.available_replicas
                 ret['create_time'] = times
                 ret['update_time'] = uptimes
                 for j in i.spec.template.spec.containers:
