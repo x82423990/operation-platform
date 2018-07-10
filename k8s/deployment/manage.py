@@ -70,7 +70,7 @@ class SelectType(View):
 class DpManagement(View):
 
     def post(self, request, types):
-        ret = {'status': 0}
+        ret = {'code': 0}
         if types == 'add':
             salt = '-' + ''.join(random.sample(string.ascii_lowercase, 4))
             ns = request.POST.get('ns')
@@ -92,7 +92,7 @@ class DpManagement(View):
             #     create_deployment(extensions_v1beta1, deploy, ns=ns)
             # except ApiException as e:
             #     tmp = eval(str(e.body))
-            #     ret['status'] = tmp.get('code')
+            #     ret['code'] = tmp.get('code')
             #     ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
 
@@ -100,9 +100,9 @@ class DpManagement(View):
             ns = request.POST.get('ns_name')
             dp_name = request.POST.get('dp_name')
             print(ns, dp_name)
-            ret = {'status': 0}
+            ret = {'code': 0}
             if dp_name is None:
-                ret['status'] = 100
+                ret['code'] = 100
                 ret['msg'] = 'ns_name or dp_name is None'
                 return JsonResponse(ret)
             else:
@@ -110,15 +110,15 @@ class DpManagement(View):
                     config.load_kube_config()
                     extensions_v1beta1 = client.ExtensionsV1beta1Api()
                     delete_deployment(extensions_v1beta1, ns=ns, images=dp_name)
-                    ret['status'] = 0
+                    ret['code'] = 0
                     ret['msg'] = 'ok'
                 except Exception as e:
-                    ret['status'] = 55
+                    ret['code'] = 55
                     ret['msg'] = e
                 return JsonResponse(ret)
 
         if types == 'update':
-            ret = {'status': 0}
+            ret = {'code': 0}
             dp_name = request.POST.get('dp_name')
             env = request.POST.get('config')
             img = request.POST.get('image')
@@ -154,7 +154,7 @@ class DpManagement(View):
             #
             #     tmp = eval(str(e.body))
             #
-            #     ret['status'] = tmp.get('code')
+            #     ret['code'] = tmp.get('code')
             #
             #     ret['msg'] = tmp.get('message')
 
