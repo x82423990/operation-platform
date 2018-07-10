@@ -63,6 +63,14 @@ def get_project(url='http://hub.cbble.com/api/projects'):
     return d
 
 
+def get_project_id(repo):
+    project = get_project()
+    print(project)
+    for k, v in project.items():
+        if v == repo:
+            return k
+
+
 # print(get_project())
 
 # for i in get_project():
@@ -106,5 +114,6 @@ if __name__ == '__main__':
     # a = get_tags('test/pro-hsd-approve-web')
     # print(a)
     # print(get_project())
-    # print(get_project())
-    print(get_image_name(project_id=6))
+    print(get_project())
+    # print(get_image_name(project_id=6))
+    print(get_project_id("rule"))
