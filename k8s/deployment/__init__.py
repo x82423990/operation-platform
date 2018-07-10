@@ -203,11 +203,11 @@ class DpManagement(View):
             if img and tags:
                 tag_list = repitl.get_tags(img)
                 if tags in tag_list:
-                    return JsonResponse({"code": 0, "msg":"success"})
+                    return JsonResponse({"code": 0, "msg": "success"})
                 else:
                     return JsonResponse({"code": 404, "msg": "請輸入正確的鏡像tag"})
             else:
-                return JsonResponse({"code": 403,"msg": "鏡像或者tag為空"})
+                return JsonResponse({"code": 403, "msg": "鏡像或者tag為空"})
 
         if types == 'update':
             ret = {'code': 0}

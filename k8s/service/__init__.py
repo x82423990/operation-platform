@@ -11,12 +11,14 @@ class SvcManagement(View):
     @method_decorator(login_required)
     def get(self, request, types):
         if types == "getsvclist":
-            page = int(request.GET.get('page'))
-            limit = int(request.GET.get('limit'))
+            page = request.GET.get('page')
+            limit = request.GET.get('limit')
+            keyword = request.GET.get('keyword')
             config.load_kube_config()
             v1 = client.CoreV1Api()
-            dp_list = []
+            svc_list = []
             res = dict()
+            sus = dict()
             count = 0
             tmp = v1.list_service_for_all_namespaces().items
             try:
@@ -26,16 +28,30 @@ class SvcManagement(View):
                     ret['selector'] = str(i.spec.selector)
                     ret['cluster_ip'] = i.spec.cluster_ip
                     ret['group'] = i.metadata.namespace
-                    dp_list.append(ret)
-                    count += 1
+                    if keyword:
+                        if keyword in ret.get('name'):
+                            svc_list.append(ret)
+                            count += 1
+                    else:
+                        svc_list.append(ret)
+                        count += 1
+                if count ==0:
+                    return  JsonResponse({"code": 404, "msg": " not found svc!" })
                 res['count'] = count
-                res["code"] = 0
+                sus["code"] = 0
+                page = int(page)
+                if limit is None:
+                    limit = 1000
+                else:
+                    limit = int(limit)
                 start_page = page * limit - limit
                 end_page = page * limit
-                res['data'] = dp_list[start_page: end_page]
+                res['data'] = svc_list[start_page: end_page]
+                sus['data'] = res
             except Exception as e:
                 print(e)
-            return JsonResponse(res, safe=False)
+                sus['code'] = 500
+            return JsonResponse(sus)
 
     @method_decorator(login_required)
     def post(self, request, types):

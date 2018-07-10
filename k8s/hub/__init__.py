@@ -84,7 +84,7 @@ def get_tags(repo_name, urls='http://hub.cbble.com/api'):
     tmp = []
     for i in tags.json():
         tmp.append(i.get('name'))
-    return tmp[-3:]
+    return tmp
 
 
 def get_image_name(url='http://hub.cbble.com/api/repositories?project_id=', project_id=11):
