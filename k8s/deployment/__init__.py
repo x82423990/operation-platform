@@ -1,7 +1,7 @@
 from django.views.generic import View
 from kubernetes import client, config
 import time, json
-from  json import JSONDecodeError, loads
+from json import JSONDecodeError, loads
 from django.http import JsonResponse
 from kubernetes.client.rest import ApiException
 from .DpApi import create_deployment, create_deployment_object, delete_deployment, update_deployment
@@ -9,7 +9,6 @@ from k8s import hub as repitl
 from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.decorators import method_decorator
 from datetime import timedelta, timezone
-
 
 
 class DpList(View):
@@ -156,7 +155,6 @@ class SelectType(View):
 class DpManagement(View):
     # @method_decorator(login_required)
 
-
     def post(self, request, types):
         ret = dict()
         ret['code'] = 0
@@ -187,23 +185,31 @@ class DpManagement(View):
             # dp_name = request.POST.get('name')
             # data = request.POST.get('date')
             try:
-                data = loads(request.body)
-                print(data.get('data'))
-                return JsonResponse(data, safe=False)
-            except JSONDecodeError as e:
-                return JsonResponse({"code": 500, "msg": e})
-            # for i in data.get('data'):
-            #     try:
-            #         config.load_kube_config()
-            #         extensions_v1beta1 = client.ExtensionsV1beta1Api()
-            #         delete_deployment(extensions_v1beta1, ns=i.get('ns'), images=i.get('name'))
-            #         ret['code'] = 0
-            #         ret['msg'] = '删除成功'
-            #     except ApiException as e:
-            #         tmp = eval(str(e.body))
-            #         ret['code'] = tmp.get('code')
-            #         ret['msg'] = tmp.get('message')
-            # return JsonResponse({"code": 0})
+                data = json.loads(request.body)
+                # return JsonResponse(data, safe=False)
+                # return JsonResponse({"code": 501, "msg": "2"})
+            except JSONDecodeError:
+                return JsonResponse({"code": 500, "msg": "the value is not a json object"})
+            rmlist = []
+            sus = dict()
+            for i in data.get('data'):
+
+                try:
+                    config.load_kube_config()
+                    extensions_v1beta1 = client.ExtensionsV1beta1Api()
+                    msg = delete_deployment(extensions_v1beta1, ns=i.get('ns'), images=i.get('name'))
+
+                    sus['code'] = 0
+                    rmlist.append(msg)
+                except ApiException as e:
+                    tmp = eval(str(e.body))
+                    sus['code'] = tmp.get('code')
+                    ret['msg'] = tmp.get('message')
+            if len(rmlist) == 0:
+                return JsonResponse({"code": 2, "msg": "No items wre been deleted or specified item not found!"})
+            ret['count'] = len(msg)
+            sus['data'] = ret
+            return JsonResponse(sus)
 
         if types == "verify":
             img = request.POST.get('image')

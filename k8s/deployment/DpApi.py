@@ -78,7 +78,8 @@ def delete_deployment(api_instance, ns, images):
         body=client.V1DeleteOptions(
             propagation_policy='Foreground',
             grace_period_seconds=5))
-    print("Deployment deleted. status='%s'" % str(api_response.status))
+    # print("Deployment deleted. status='%s'" % str(api_response.status))
+    return api_response.status
 
 
 def main():
