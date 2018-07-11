@@ -181,35 +181,32 @@ class DpManagement(View):
             return JsonResponse(ret, safe=True)
 
         if types == 'delete':
-            # ns = request.POST.get('ns')
-            # dp_name = request.POST.get('name')
-            # data = request.POST.get('date')
+            # try:
+            #     data = json.loads(request.body)
+            # except JSONDecodeError:
+            #     return JsonResponse({"code": 500, "msg": "the value is not a json object"})
             try:
-                data = json.loads(request.body)
-                # return JsonResponse(data, safe=False)
-                # return JsonResponse({"code": 501, "msg": "2"})
-            except JSONDecodeError:
-                return JsonResponse({"code": 500, "msg": "the value is not a json object"})
-            rmlist = []
-            sus = dict()
-            for i in data.get('data'):
-
+                data = request.POST.get('data')
+            except TypeError as e:
+                return JsonResponse({"code": 500, "msg": e})
+            rm_list = []
+            # eval 把str 轉換成str
+            for i in eval(data):
                 try:
                     config.load_kube_config()
                     extensions_v1beta1 = client.ExtensionsV1beta1Api()
                     msg = delete_deployment(extensions_v1beta1, ns=i.get('ns'), images=i.get('name'))
-
-                    sus['code'] = 0
-                    rmlist.append(msg)
+                    ret['code'] = 0
+                    rm_list.append(msg)
                 except ApiException as e:
                     tmp = eval(str(e.body))
-                    sus['code'] = tmp.get('code')
+                    ret['code'] = tmp.get('code')
                     ret['msg'] = tmp.get('message')
-            if len(rmlist) == 0:
+            if len(rm_list) == 0:
                 return JsonResponse({"code": 2, "msg": "No items wre been deleted or specified item not found!"})
-            ret['count'] = len(msg)
-            sus['data'] = ret
-            return JsonResponse(sus)
+            # ret['count'] = len(rm_list)
+            ret['msg'] = "共%d個項目被刪除" % len(rm_list)
+            return JsonResponse(ret)
 
         if types == "verify":
             img = request.POST.get('image')
