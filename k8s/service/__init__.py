@@ -10,17 +10,21 @@ from django.utils.decorators import method_decorator
 class SvcManagement(View):
     @method_decorator(login_required)
     def get(self, request, types):
-        if types == "getsvclist":
+        if types == "list":
             page = request.GET.get('page')
             limit = request.GET.get('limit')
             keyword = request.GET.get('keyword')
+            ns = request.GET.get('ns')
             config.load_kube_config()
             v1 = client.CoreV1Api()
             svc_list = []
             res = dict()
             sus = dict()
             count = 0
-            tmp = v1.list_service_for_all_namespaces().items
+            if ns:
+                tmp = v1.list_namespaced_service(namespace=ns).items
+            else:
+                tmp = v1.list_service_for_all_namespaces().items
             try:
                 for i in tmp:
                     ret = dict()
@@ -55,7 +59,7 @@ class SvcManagement(View):
 
     @method_decorator(login_required)
     def post(self, request, types):
-        if types == 'del':
+        if types == 'delete':
             ret = {'code': 0}
             ns = request.POST.get('ns')
             svc_name = request.POST.get('name')

@@ -7,70 +7,94 @@ from django.utils.decorators import method_decorator
 
 
 class IngressManagement(View):
+
     @method_decorator(login_required)
     def get(self, request, types):
         configuration = config.load_kube_config()
         api_instance = client.ExtensionsV1beta1Api(client.ApiClient(configuration))
-        if types == "getall":
-            page = int(request.GET.get('page'))
-            limit = int(request.GET.get('limit'))
-            res = dict()
-            ret = []
-            count = 1
+        if types == "list":
             try:
-                for i in api_instance.list_ingress_for_all_namespaces().items:
-                    ret.append({'name': i.metadata.name, 'namespaces': i.metadata.namespace,
-                                'svc_name': i.spec.rules[0].http.paths[0].backend.service_name,
-                                'svc_port': i.spec.rules[0].http.paths[0].backend.service_port,
-                                'host': i.spec.rules[0].host})
-                    count += 1
+                page = int(request.GET.get('page'))
+                limit = request.GET.get('limit')
+                keyword = request.GET.get('keyword')
+                ns = request.GET.get('ns')
+                test = request.GET.get('test', 0)
+            except TypeError:
+                return JsonResponse({'code': 501, "msg": "Wrong or miss parameters!"})
+            res = dict()
+            sus = dict()
+            ret = []
+            count = 0
+            if ns:
+                tmp = api_instance.list_namespaced_ingress(ns).items
+            else:
+                tmp = api_instance.list_ingress_for_all_namespaces().items
+            try:
+                for i in tmp:
+                    tmp = {'name': i.metadata.name, 'namespaces': i.metadata.namespace,
+                           'svc_name': i.spec.rules[0].http.paths[0].backend.service_name,
+                           'svc_port': i.spec.rules[0].http.paths[0].backend.service_port,
+                           'host': i.spec.rules[0].host}
+                    if keyword:
+                        if keyword in tmp.get("name"):
+                            ret.append(tmp)
+                            count += 1
+                    else:
+                        ret.append(tmp)
+                        count += 1
                 res['count'] = count
-                res["code"] = 0
+                sus["code"] = test
+                if limit is None:
+                    limit = 10000
                 start_page = page * limit - limit
                 end_page = page * limit
                 res['data'] = ret[start_page: end_page]
+                sus['data'] = res
             except ApiException as e:
-                print(e)
-            return JsonResponse(res, safe=False)
+                sus['code'] = 500
+                sus['msg'] = e.status
+            return JsonResponse(sus, safe=False)
 
     @method_decorator(login_required)
     def post(self, request, types):
         if types == "add":
-            ret = {'status': 0}
+            ret = {'code': 0}
             ing_name = request.POST.get('name')
-            print(ing_name)
             ns = request.POST.get('ns')
             svc_name = request.POST.get('selector')
+            svc_port = request.POST.get('target_port')
             if not ing_name:
                 ing_name = svc_name
-            print(ing_name)
             config.load_kube_config()
             body = client.V1beta1Ingress()
             body.api_version = 'extensions/v1beta1'
             body.kind = 'Ingress'
-            bakend = client.V1beta1IngressBackend(service_name=svc_name, service_port=80)
+            bakend = client.V1beta1IngressBackend(service_name=svc_name, service_port=int(svc_port))
             paths = [client.V1beta1HTTPIngressPath(backend=bakend)]
 
             htp = client.V1beta1HTTPIngressRuleValue(paths=paths)
-            rules = [client.V1beta1IngressRule(host=ing_name+'.test.cbble.com', http=htp)]
+            rules = [client.V1beta1IngressRule(host=ing_name + '.test.cbble.com', http=htp)]
 
             body.metadata = client.V1ObjectMeta(name=ing_name)
             body.spec = client.V1beta1IngressSpec(rules=rules)
             api = client.ExtensionsV1beta1Api()
             try:
-                api.create_namespaced_ingress(ns, body)
+                api.create_namespaced_ingress(namespace=ns, body=body)
 
             except ApiException as e:
                 tmp = eval(str(e.body))
                 ret['status'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
+                return JsonResponse(ret)
+            except ValueError:
+                return JsonResponse({"code": 477, "msg": "Params Err"})
             return JsonResponse(ret, safe=True)
 
-        if types == 'del':
+        if types == 'delete':
 
             ret = {'status': 0}
             ing_name = request.POST.get('name')
-            ns = request.POST.get('namespaces')
+            ns = request.POST.get('ns')
             config.load_kube_config()
             try:
                 ad = client.V1DeleteOptions(api_version='extensions/v1beta1')
