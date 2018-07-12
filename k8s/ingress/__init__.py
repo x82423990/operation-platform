@@ -14,7 +14,7 @@ class IngressManagement(View):
         api_instance = client.ExtensionsV1beta1Api(client.ApiClient(configuration))
         if types == "list":
             try:
-                page = request.GET.get('page', 1)
+                page = int(request.GET.get('page', 1))
                 limit = request.GET.get('limit', 1000)
                 keyword = request.GET.get('keyword')
                 ns = request.GET.get('ns')
