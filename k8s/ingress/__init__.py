@@ -14,8 +14,8 @@ class IngressManagement(View):
         api_instance = client.ExtensionsV1beta1Api(client.ApiClient(configuration))
         if types == "list":
             try:
-                page = int(request.GET.get('page'))
-                limit = request.GET.get('limit')
+                page = request.GET.get('page', 1)
+                limit = request.GET.get('limit', 1000)
                 keyword = request.GET.get('keyword')
                 ns = request.GET.get('ns')
                 test = request.GET.get('test', 0)
@@ -54,6 +54,7 @@ class IngressManagement(View):
                 sus['code'] = 500
                 sus['msg'] = e.status
             return JsonResponse(sus, safe=False)
+        return JsonResponse({"code": 404})
 
     @method_decorator(login_required)
     def post(self, request, types):
