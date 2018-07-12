@@ -56,6 +56,8 @@ class SvcManagement(View):
                 print(e)
                 sus['code'] = 500
             return JsonResponse(sus)
+        else:
+            return JsonResponse({"code": 404})
 
     @method_decorator(login_required)
     def post(self, request, types):
