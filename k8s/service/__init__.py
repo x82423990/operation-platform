@@ -11,7 +11,7 @@ class SvcManagement(View):
     @method_decorator(login_required)
     def get(self, request, types):
         if types == "list":
-            page = request.GET.get('page')
+            page = request.GET.get('page', 1)
             limit = request.GET.get('limit')
             keyword = request.GET.get('keyword')
             ns = request.GET.get('ns')
