@@ -32,7 +32,7 @@ class IngressManagement(View):
             try:
                 for i in tmp:
                     tmp = {'name': i.metadata.name, 'ns': i.metadata.namespace,
-                           'source_port': i.spec.rules[0].http.paths[0].backend.service_name,
+                           'selector': i.spec.rules[0].http.paths[0].backend.service_name,
                            'target_port': i.spec.rules[0].http.paths[0].backend.service_port,
                            'url': i.spec.rules[0].host}
                     if keyword:

@@ -24,4 +24,4 @@ class MonitorInfo(models.Model):
     available_mem = models.FloatField(max_length=64, help_text="可用内存")
 
     def __str__(self):
-        return
+        return self.load
