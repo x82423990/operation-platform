@@ -15,7 +15,7 @@ class IngressManagement(View):
         if types == "list":
             try:
                 page = int(request.GET.get('page', 1))
-                limit = request.GET.get('limit', 1000)
+                limit = int(request.GET.get('limit', 1000))
                 keyword = request.GET.get('keyword')
                 ns = request.GET.get('ns')
                 test = request.GET.get('test', 0)
@@ -44,8 +44,6 @@ class IngressManagement(View):
                         count += 1
                 res['count'] = count
                 sus["code"] = test
-                if limit is None:
-                    limit = 10000
                 start_page = page * limit - limit
                 end_page = page * limit
                 res['data'] = ret[start_page: end_page]
