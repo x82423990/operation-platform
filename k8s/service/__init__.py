@@ -95,9 +95,10 @@ class SvcManagement(View):
                 service.spec = spec
                 api_instance.create_namespaced_service(namespace=ns, body=service)
                 ret['msg'] = "add success!"
-
             except ApiException as e:
                 tmp = eval(str(e.body))
                 ret['code'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
+
+        return JsonResponse({"code": 404})
