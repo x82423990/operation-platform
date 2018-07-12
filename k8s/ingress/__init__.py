@@ -59,12 +59,10 @@ class IngressManagement(View):
     def post(self, request, types):
         if types == "add":
             ret = {'code': 0}
-            ing_name = request.POST.get('name')
             ns = request.POST.get('ns')
             svc_name = request.POST.get('selector')
-            svc_port = request.POST.get('target_port')
-            if not ing_name:
-                ing_name = svc_name
+            svc_port = request.POST.get('target_port', 80)
+            ing_name = request.POST.get('name', svc_name)
             config.load_kube_config()
             body = client.V1beta1Ingress()
             body.api_version = 'extensions/v1beta1'
@@ -127,3 +125,5 @@ class IngressManagement(View):
                 ret['status'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
+
+        return JsonResponse({"code": 404})

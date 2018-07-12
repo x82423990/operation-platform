@@ -79,10 +79,7 @@ class SvcManagement(View):
             ret["code"] = 0
             ns = request.POST.get('ns')
             labels = request.POST.get('selector')
-            if request.POST.get('name'):
-                name = request.POST.get('name')
-            else:
-                name = labels
+            name = request.POST.get('name', labels)
             ports = int(request.POST.get('source_port'))
             target = int(request.POST.get('target_port'))
             try:
@@ -97,7 +94,7 @@ class SvcManagement(View):
                 spec.ports = [client.V1ServicePort(protocol="TCP", port=ports, target_port=target)]
                 service.spec = spec
                 api_instance.create_namespaced_service(namespace=ns, body=service)
-                ret['msg'] = "服务创建成功"
+                ret['msg'] = "add success!"
 
             except ApiException as e:
                 tmp = eval(str(e.body))
