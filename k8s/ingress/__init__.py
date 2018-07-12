@@ -31,10 +31,10 @@ class IngressManagement(View):
                 tmp = api_instance.list_ingress_for_all_namespaces().items
             try:
                 for i in tmp:
-                    tmp = {'name': i.metadata.name, 'namespaces': i.metadata.namespace,
-                           'svc_name': i.spec.rules[0].http.paths[0].backend.service_name,
-                           'svc_port': i.spec.rules[0].http.paths[0].backend.service_port,
-                           'host': i.spec.rules[0].host}
+                    tmp = {'name': i.metadata.name, 'ns': i.metadata.namespace,
+                           'source_port': i.spec.rules[0].http.paths[0].backend.service_name,
+                           'target_port': i.spec.rules[0].http.paths[0].backend.service_port,
+                           'url': i.spec.rules[0].host}
                     if keyword:
                         if keyword in tmp.get("name"):
                             ret.append(tmp)
@@ -80,7 +80,7 @@ class IngressManagement(View):
 
             except ApiException as e:
                 tmp = eval(str(e.body))
-                ret['status'] = tmp.get('code')
+                ret['code'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
                 return JsonResponse(ret)
             except ValueError:
@@ -89,7 +89,7 @@ class IngressManagement(View):
 
         if types == 'delete':
 
-            ret = {'status': 0}
+            ret = {'code': 0}
             ing_name = request.POST.get('name')
             ns = request.POST.get('ns')
             config.load_kube_config()
@@ -98,18 +98,21 @@ class IngressManagement(View):
                 client.ExtensionsV1beta1Api().delete_namespaced_ingress(namespace=ns, name=ing_name, body=ad)
             except ApiException as e:
                 print("Exception when calling ExtensionsV1beta1Api->create_namespaced_ingress: %s\n" % e)
-                ret['status'] = 12
+                ret['code'] = 12
                 ret['msg'] = e
                 return JsonResponse(ret, safe=True)
             return JsonResponse(ret, safe=True)
 
         if types == 'update':
-            ret = {'status': 0}
-            ing_name = request.POST.get('ing_name', None)
-            m_ns = request.POST.get('m_ns', None)
-            m_port = request.POST.get('m_port', None)
-            m_host = request.POST.get('m_host', None)
-            m_label = request.POST.get('m_label', None)
+            ret = {'code': 0}
+            try:
+                ing_name = request.POST.get('name', None)
+                m_ns = request.POST.get('ns', None)
+                m_port = request.POST.get('target_port', None)
+                m_host = request.POST.get('url', None) + "test.cbble.com"
+                m_label = request.POST.get('selector', None)
+            except TypeError:
+                return JsonResponse({'code': 500, "msg": "parameter ERR!"})
             config.load_kube_config()
             api = client.ExtensionsV1beta1Api()
             try:
@@ -121,7 +124,7 @@ class IngressManagement(View):
                 ret['msg'] = 'succeed'
             except ApiException as e:
                 tmp = eval(str(e.body))
-                ret['status'] = tmp.get('code')
+                ret['code'] = tmp.get('code')
                 ret['msg'] = tmp.get('message')
             return JsonResponse(ret, safe=True)
 
