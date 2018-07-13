@@ -9,13 +9,24 @@ class Node:
     def __retsult(self, data):
         return float(data.get('data').get("result")[-1].get("value")[-1])
 
-    def list(self, condition=""):
+    def list(self, node=None):
         apiversion = "/api/v1/series"
-        args = '?match[]=up{%s}' % condition
+        if node:
+            params = 'instance="%s"' % node
+        else:
+            params = ""
+
+        args = '?match[]=up{%s}' % params
+        print(args)
         url = self.url + apiversion + args
+        print(url)
         content = requests.get(url)
         # print(content.json())
-        return content.json()
+        try:
+            ret = content.json().get('data')
+        except (IndexError, TypeError):
+            return None
+        return ret
 
     def cpuinfo(self, instance):
         apiversion_count = "/api/v1/series"
@@ -50,10 +61,10 @@ class Node:
 
 if __name__ == '__main__':
     n = Node()
-    params = 'instance="slave4"'
+    params = 'node="slave4"'
     # tmp = n.list().get('data')
     #
     # tmp, tmp2 = n.cpuinfo(instance="slave4")
-    # n.list(condition=params)
-    tmp, tmp2 = n.meminfo(instance="slave4")
-    print(tmp, tmp2)
+    tmp = n.list()
+    # tmp, tmp2 = n.meminfo(instance="slave4")
+    print(tmp)

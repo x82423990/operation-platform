@@ -18,7 +18,6 @@ from django.urls import path
 from django.conf.urls import url, include
 import hxbd
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/login/', hxbd.user_login),
@@ -27,4 +26,6 @@ urlpatterns = [
     path('user/deny/', hxbd.denys),
 
     url(r'^', include("k8s.urls")),
+    url(r'^server/', include("server.urls")),
+
 ]
