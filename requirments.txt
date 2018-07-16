@@ -19,4 +19,4 @@ rsa==3.4.2
 six==1.11.0
 urllib3==1.22
 websocket-client==0.47.0
-corsheaders
+#test
