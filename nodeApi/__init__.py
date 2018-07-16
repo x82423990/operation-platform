@@ -15,7 +15,6 @@ class Node:
             params = 'instance="%s"' % node
         else:
             params = ""
-
         args = '?match[]=up{%s}' % params
         print(args)
         url = self.url + apiversion + args
@@ -47,7 +46,6 @@ class Node:
     def meminfo(self, instance):
         apiversion = "/api/v1/query"
         args_memtotal = '?query=node_memory_MemTotal_bytes{instance="%s"}' % instance
-        # args_memavb =
         memTotal = requests.get(self.url + apiversion + args_memtotal)
         memTotalValue = int(self.__retsult(memTotal.json())) / 1024 / 1024 / 1024
 
@@ -60,11 +58,13 @@ class Node:
 
 
 if __name__ == '__main__':
-    n = Node()
+
     params = 'node="slave4"'
     # tmp = n.list().get('data')
     #
     # tmp, tmp2 = n.cpuinfo(instance="slave4")
-    tmp = n.list()
+    tmp = Node().list()
+    for i in tmp:
+        print(i.get("instance"))
     # tmp, tmp2 = n.meminfo(instance="slave4")
-    print(tmp)
+    # print(tmp)

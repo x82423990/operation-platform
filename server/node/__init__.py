@@ -63,6 +63,16 @@ class NodeOperating(View):
                 else:
                     return JsonResponse({"code": 4, "msg": "get server err!"})
             return JsonResponse({"code": 0, "msg": "flush success!"})
+        if types == "list_online":
+            node_all = Node().list()
+            node_list = []
+            for n in node_all:
+                node = n.get("instance")
+                print(node)
+                node_list.append(node)
+            return JsonResponse({"code": 0, "data": node_list})
+        else:
+            return JsonResponse({"code": 404, "msg": 'page not found'})
 
     def post(self, request, types):
         if types == "delete":
