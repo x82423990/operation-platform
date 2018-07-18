@@ -1,6 +1,9 @@
 from django.db import models
 
 
+# import django.utils.timezone as timezone
+
+
 class Node(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -24,7 +27,10 @@ class MonitorInfo(models.Model):
     load = models.FloatField(max_length=64, help_text="CPU负载")
     count_cpu = models.IntegerField(help_text="CPU 个数")
     total_mem = models.FloatField(max_length=64, help_text="总内存")
+    total_disk = models.FloatField(max_length=64, help_text="总磁盘")
+    available_disk = models.FloatField(max_length=64, help_text="可用磁盘")
     available_mem = models.FloatField(max_length=64, help_text="可用内存")
+    get_time = models.DateTimeField(auto_now_add=True, help_text="时间")
 
     def __str__(self):
         return self.load
