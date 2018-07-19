@@ -121,13 +121,13 @@ class Monitor(View):
             return JsonResponse({"code": 0, "msg": "flush success!"})
 
         if types == "list":
-            node = request.GET.get('name')
+            node = request.GET.get('name', None)
             last = request.GET.get('name')
             start = request.GET.get('start')
             end = request.GET.get('end')
             try:
                 ser = server.objects.get(name=node)
-            except IntegrityError:
+            except (IntegrityError, server.models.DoesNotExis, AttributeError):
                 return JsonResponse("err")
             ret = MonitorInfo.objects.filter(server_name=ser).order_by("get_time")
             ret2 = MonitorInfo.objects.filter(server_name=ser).values().order_by("get_time")
