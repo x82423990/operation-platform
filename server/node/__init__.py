@@ -131,13 +131,13 @@ class Monitor(View):
                 return JsonResponse("err")
             ret = MonitorInfo.objects.filter(server_name=ser).order_by("get_time")
             ret2 = MonitorInfo.objects.filter(server_name=ser).values().order_by("get_time")
-            print(ret2)
-            # print(ret.objects.get(all()))
+            # print(ret2)
+            # # print(ret.objects.get(all()))
             # 转换成UTC， 强制
             # print(ret.get_time.replace(tzinfo=timezone.utc))
             # UTC强制转换utc-8
             # print(ret.get_time.astimezone(timezone(timedelta(hours=8))))
-            tmp = eval(serializers.serialize("json", ret))
+            tmp = eval(serializers.serialize("json", ret2))
             data = dict()
             data["code"] = 0
             data["data"] = tmp

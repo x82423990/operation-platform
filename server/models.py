@@ -1,6 +1,6 @@
 from django.db import models
 
-
+from django.forms.models import model_to_dict
 # import django.utils.timezone as timezone
 
 
@@ -34,6 +34,19 @@ class MonitorInfo(models.Model):
 
     def __str__(self):
         return self.load
+
+    def to_dict(self):
+        opts = self._meta
+        data = {}
+        for f in opts.concrete_fields:
+            value = f.value_from_object(self)
+            if isinstance(value, datetime):
+                value = value.strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(f, FileField):
+                value = value.url if value else None
+            data[f.name] = value
+        return data
+
 
     class Meta:
         db_table = "monitorinfo"
