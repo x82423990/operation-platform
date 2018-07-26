@@ -13,7 +13,7 @@ class SvcManagement(View):
         if types == "list":
             page = request.GET.get('page', 1)
             limit = request.GET.get('limit')
-            keyword = request.GET.get('keyword')
+            keyword = request.GET.get('namespace')
             ns = request.GET.get('ns')
             config.load_kube_config()
             v1 = client.CoreV1Api()

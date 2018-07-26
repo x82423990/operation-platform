@@ -17,7 +17,7 @@ class IngressManagement(View):
                 page = int(request.GET.get('page', 1))
                 limit = int(request.GET.get('limit', 1000))
                 keyword = request.GET.get('keyword')
-                ns = request.GET.get('ns')
+                ns = request.GET.get('namespace')
                 test = request.GET.get('test', 0)
             except TypeError:
                 return JsonResponse({'code': 501, "msg": "Wrong or miss parameters!"})

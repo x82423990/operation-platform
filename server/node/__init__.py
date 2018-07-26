@@ -137,7 +137,7 @@ class Monitor(View):
             # print(ret.get_time.replace(tzinfo=timezone.utc))
             # UTC强制转换utc-8
             # print(ret.get_time.astimezone(timezone(timedelta(hours=8))))
-            tmp = eval(serializers.serialize("json", ret2))
+            tmp = eval(serializers.serialize("json", ret))
             data = dict()
             data["code"] = 0
             data["data"] = tmp
