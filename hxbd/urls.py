@@ -27,5 +27,6 @@ urlpatterns = [
 
     url(r'^', include("k8s.urls")),
     url(r'^server/', include("server.urls")),
+    url(r'^ops/', include("subs.urls")),
 
 ]

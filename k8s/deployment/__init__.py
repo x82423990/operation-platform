@@ -190,7 +190,7 @@ class DpManagement(View):
             except TypeError as e:
                 return JsonResponse({"code": 500, "msg": e})
             rm_list = []
-            # eval 把str 轉換成str
+            # eval 把str 轉換成dict
             for i in eval(data):
                 try:
                     config.load_kube_config()
