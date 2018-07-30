@@ -13,11 +13,11 @@ class Mail:
         return formataddr((name, add))
 
     def send(self, to=None, cc=None):
-        from_add = "eatted@163.com"
-        password = "xl50140872"
+        from_add = "sys@hxbdtech.com"
+        password = "Aa12345678"
         to_add = to or ['xieyifan@hxbdtech.com', '82423990@qq.com']
         to_cc = cc or ['eatted@qq.com', ]
-        smtp_server = "smtp.163.com"
+        smtp_server = "smtp.qiye.aliyun.com"
         sub = "上线通知"
         body = self.content
         msg = MIMEMultipart()
