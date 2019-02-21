@@ -9,9 +9,6 @@ from sendmail import Mail
 class Sub(View):
     def post(self, request, types):
         data = request.POST.get('data', None)
-        # p = producter.Producer()
-        # p.pub(data)
-        # p.close()
         tatil = '''各位好:\n本次发布内容为\n项目      镜像                tag\n'''
         for i in eval(data):
             print(i.get('tag'))
